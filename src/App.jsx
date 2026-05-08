@@ -3,8 +3,10 @@ import axios from "axios";
 
 export default function AIJobTrackerDashboard() {
   const [jobs, setJobs] = useState([]);
-  const [filteredJobs, setFilteredJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [filteredJobs, setFilteredJobs] =
+    useState([]);
+  const [loading, setLoading] =
+    useState(true);
 
   const [search, setSearch] = useState("");
   const [locationFilter, setLocationFilter] =
@@ -12,6 +14,11 @@ export default function AIJobTrackerDashboard() {
 
   const [roleFilter, setRoleFilter] =
     useState("All");
+
+  // SUBSCRIBER EMAIL
+
+  const [subscriberEmail, setSubscriberEmail] =
+    useState("");
 
   // SAVED JOBS
 
@@ -39,9 +46,14 @@ export default function AIJobTrackerDashboard() {
 
   useEffect(() => {
     filterJobs();
-  }, [search, locationFilter, roleFilter, jobs]);
+  }, [
+    search,
+    locationFilter,
+    roleFilter,
+    jobs,
+  ]);
 
-  // SAVE TO LOCAL STORAGE
+  // SAVE LOCAL STORAGE
 
   useEffect(() => {
     localStorage.setItem(
@@ -69,7 +81,8 @@ export default function AIJobTrackerDashboard() {
 
       const cleanedJobs = response.data.filter(
         (job) =>
-          job["Job Title"] && job["Company"]
+          job["Job Title"] &&
+          job["Company"]
       );
 
       setJobs(cleanedJobs);
@@ -79,6 +92,52 @@ export default function AIJobTrackerDashboard() {
       setLoading(false);
     }
   };
+
+  // SUBSCRIBE
+
+  // REPLACE ONLY THIS FUNCTION IN YOUR App.jsx
+
+const handleSubscribe = async () => {
+
+  if (!subscriberEmail) {
+    alert("Please enter email 😄");
+    return;
+  }
+
+  try {
+
+    await fetch(
+      "https://n8n-production-0be7.up.railway.app/webhook/subscribe",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+
+        body: JSON.stringify({
+          email:
+            subscriberEmail,
+        }),
+      }
+    );
+
+    alert(
+      "Successfully subscribed 🚀"
+    );
+
+    setSubscriberEmail("");
+
+  } catch (error) {
+
+    console.log(error);
+
+    alert(
+      "Subscription failed 😢"
+    );
+  }
+};
 
   // FILTER JOBS
 
@@ -99,11 +158,13 @@ export default function AIJobTrackerDashboard() {
       );
     }
 
-    // LOCATION FILTER
+    // LOCATION
 
     if (locationFilter !== "All") {
       updated = updated.filter((job) =>
-        job["Location"]?.includes(locationFilter)
+        job["Location"]?.includes(
+          locationFilter
+        )
       );
     }
 
@@ -112,17 +173,20 @@ export default function AIJobTrackerDashboard() {
     if (roleFilter !== "All") {
       updated = updated.filter((job) => {
         const role =
-          job["Job Title"]?.toLowerCase() || "";
+          job["Job Title"]?.toLowerCase() ||
+          "";
 
         if (
-          roleFilter === "Python Developer" &&
+          roleFilter ===
+            "Python Developer" &&
           role.includes("python")
         ) {
           return true;
         }
 
         if (
-          roleFilter === "React Developer" &&
+          roleFilter ===
+            "React Developer" &&
           role.includes("react")
         ) {
           return true;
@@ -130,21 +194,25 @@ export default function AIJobTrackerDashboard() {
 
         if (
           roleFilter === "ML Engineer" &&
-          (role.includes("machine learning") ||
+          (role.includes(
+            "machine learning"
+          ) ||
             role.includes("ml"))
         ) {
           return true;
         }
 
         if (
-          roleFilter === "Data Analyst" &&
+          roleFilter ===
+            "Data Analyst" &&
           role.includes("data")
         ) {
           return true;
         }
 
         if (
-          roleFilter === "Java Developer" &&
+          roleFilter ===
+            "Java Developer" &&
           role.includes("java")
         ) {
           return true;
@@ -188,7 +256,8 @@ export default function AIJobTrackerDashboard() {
       (item) =>
         item["Job Title"] ===
           job["Job Title"] &&
-        item["Company"] === job["Company"]
+        item["Company"] ===
+          job["Company"]
     );
 
     if (exists) {
@@ -280,11 +349,15 @@ export default function AIJobTrackerDashboard() {
       let category = "Other Jobs";
 
       if (
-        role.toLowerCase().includes("python")
+        role.toLowerCase().includes(
+          "python"
+        )
       ) {
         category = "Python Developer";
       } else if (
-        role.toLowerCase().includes("react")
+        role.toLowerCase().includes(
+          "react"
+        )
       ) {
         category = "React Developer";
       } else if (
@@ -307,19 +380,22 @@ export default function AIJobTrackerDashboard() {
           .toLowerCase()
           .includes("frontend")
       ) {
-        category = "Frontend Developer";
+        category =
+          "Frontend Developer";
       } else if (
         role
           .toLowerCase()
           .includes("backend")
       ) {
-        category = "Backend Developer";
+        category =
+          "Backend Developer";
       } else if (
         role
           .toLowerCase()
           .includes("full stack")
       ) {
-        category = "Full Stack Developer";
+        category =
+          "Full Stack Developer";
       }
 
       if (!acc[category]) {
@@ -347,12 +423,15 @@ export default function AIJobTrackerDashboard() {
 
       <div
         style={{
-          background: "rgba(255,255,255,0.8)",
+          background:
+            "rgba(255,255,255,0.8)",
           backdropFilter: "blur(10px)",
-          borderBottom: "1px solid #E5E7EB",
+          borderBottom:
+            "1px solid #E5E7EB",
           padding: "20px 30px",
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent:
+            "space-between",
           alignItems: "center",
           position: "sticky",
           top: 0,
@@ -367,7 +446,7 @@ export default function AIJobTrackerDashboard() {
               fontWeight: 900,
             }}
           >
-            👨🏻‍💻  AI Job Tracker
+            👨🏻‍💻 AI Job Tracker
           </h1>
 
           <p
@@ -478,14 +557,17 @@ export default function AIJobTrackerDashboard() {
             minWidth: 250,
             padding: 16,
             borderRadius: 14,
-            border: "1px solid #D1D5DB",
+            border:
+              "1px solid #D1D5DB",
           }}
         />
 
         <select
           value={roleFilter}
           onChange={(e) =>
-            setRoleFilter(e.target.value)
+            setRoleFilter(
+              e.target.value
+            )
           }
           style={{
             padding: 16,
@@ -493,11 +575,17 @@ export default function AIJobTrackerDashboard() {
           }}
         >
           <option>All</option>
-          <option>Python Developer</option>
-          <option>React Developer</option>
+          <option>
+            Python Developer
+          </option>
+          <option>
+            React Developer
+          </option>
           <option>ML Engineer</option>
           <option>Data Analyst</option>
-          <option>Java Developer</option>
+          <option>
+            Java Developer
+          </option>
           <option>
             Frontend Developer
           </option>
@@ -512,7 +600,9 @@ export default function AIJobTrackerDashboard() {
         <select
           value={locationFilter}
           onChange={(e) =>
-            setLocationFilter(e.target.value)
+            setLocationFilter(
+              e.target.value
+            )
           }
           style={{
             padding: 16,
@@ -520,15 +610,107 @@ export default function AIJobTrackerDashboard() {
           }}
         >
           {locations.map((loc, idx) => (
-            <option key={idx}>{loc}</option>
+            <option key={idx}>
+              {loc}
+            </option>
           ))}
         </select>
+      </div>
+
+      {/* SUBSCRIBE */}
+
+      <div
+        style={{
+          margin: "0 30px 40px",
+          background:
+            "linear-gradient(135deg,#2563EB,#4F46E5)",
+          borderRadius: 28,
+          padding: 30,
+          color: "#fff",
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent:
+            "space-between",
+          alignItems: "center",
+          gap: 20,
+          boxShadow:
+            "0 15px 35px rgba(37,99,235,0.25)",
+        }}
+      >
+        <div>
+          <h2
+            style={{
+              margin: 0,
+              fontSize: 32,
+            }}
+          >
+             Get Daily AI Job Alerts
+          </h2>
+
+          <p
+            style={{
+              marginTop: 10,
+              opacity: 0.9,
+            }}
+          >
+            Subscribe and receive latest
+            jobs directly to your email.
+          </p>
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            gap: 14,
+            flex: 1,
+            minWidth: 300,
+          }}
+        >
+          <input
+            type="email"
+            placeholder="Enter your email"
+            value={subscriberEmail}
+            onChange={(e) =>
+              setSubscriberEmail(
+                e.target.value
+              )
+            }
+            style={{
+              flex: 1,
+              padding: 16,
+              borderRadius: 14,
+              border: "none",
+              outline: "none",
+              fontSize: 15,
+            }}
+          />
+
+          <button
+            onClick={handleSubscribe}
+            style={{
+              background: "#fff",
+              color: "#2563EB",
+              border: "none",
+              borderRadius: 14,
+              padding: "16px 24px",
+              fontWeight: 700,
+              cursor: "pointer",
+              fontSize: 15,
+            }}
+          >
+            Subscribe
+          </button>
+        </div>
       </div>
 
       {/* SAVED JOBS */}
 
       {savedJobs.length > 0 && (
-        <div style={{ padding: "0 30px 40px" }}>
+        <div
+          style={{
+            padding: "0 30px 40px",
+          }}
+        >
           <h2> Saved Jobs</h2>
 
           <div
@@ -539,35 +721,41 @@ export default function AIJobTrackerDashboard() {
               gap: 20,
             }}
           >
-            {savedJobs.map((job, index) => (
-              <div
-                key={index}
-                style={{
-                  background: "#fff",
-                  borderRadius: 24,
-                  padding: 22,
-                }}
-              >
-                <h3>
-                  {job["Job Title"]}
-                </h3>
+            {savedJobs.map(
+              (job, index) => (
+                <div
+                  key={index}
+                  style={{
+                    background: "#fff",
+                    borderRadius: 24,
+                    padding: 22,
+                  }}
+                >
+                  <h3>
+                    {job["Job Title"]}
+                  </h3>
 
-                <p>
-                  🏢 {job["Company"]}
-                </p>
+                  <p>
+                    🏢 {job["Company"]}
+                  </p>
 
-                <p>
-                  📍 {job["Location"]}
-                </p>
-              </div>
-            ))}
+                  <p>
+                    📍 {job["Location"]}
+                  </p>
+                </div>
+              )
+            )}
           </div>
         </div>
       )}
 
       {/* JOBS */}
 
-      <div style={{ padding: "0 30px 50px" }}>
+      <div
+        style={{
+          padding: "0 30px 50px",
+        }}
+      >
         {loading ? (
           <div
             style={{
@@ -598,279 +786,274 @@ export default function AIJobTrackerDashboard() {
                     gap: 24,
                   }}
                 >
-                  {groupedJobs[category].map(
-                    (job, index) => {
-                      const match =
-                        getMatchValue(job);
+                  {groupedJobs[
+                    category
+                  ].map((job, index) => {
+                    const match =
+                      getMatchValue(job);
 
-                      const badge =
-                        getMatchStyle(match);
+                    const badge =
+                      getMatchStyle(match);
 
-                      return (
+                    return (
+                      <div
+                        key={index}
+                        style={{
+                          background:
+                            "#fff",
+                          borderRadius: 28,
+                          padding: 24,
+                          boxShadow:
+                            "0 15px 35px rgba(0,0,0,0.06)",
+                        }}
+                      >
                         <div
-                          key={index}
                           style={{
-                            background:
-                              "#fff",
-                            borderRadius: 28,
-                            padding: 24,
-                            boxShadow:
-                              "0 15px 35px rgba(0,0,0,0.06)",
+                            display:
+                              "flex",
+                            justifyContent:
+                              "space-between",
                           }}
                         >
-                          {/* TOP */}
-
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent:
-                                "space-between",
-                            }}
-                          >
-                            <div>
-                              <h2>
-                                {
-                                  job[
-                                    "Job Title"
-                                  ]
-                                }
-                              </h2>
-
-                              <p>
-                                🏢{" "}
-                                {
-                                  job[
-                                    "Company"
-                                  ]
-                                }
-                              </p>
-
-                              <p>
-                                📍{" "}
-                                {
-                                  job[
-                                    "Location"
-                                  ]
-                                }
-                              </p>
-                            </div>
-
-                            <div
-                              style={{
-                                ...badge,
-                                padding:
-                                  "10px 14px",
-                                borderRadius: 14,
-                                fontWeight: 700,
-                              }}
-                            >
-                              {match}% Match
-                            </div>
-                          </div>
-
-                          {/* SALARY */}
-
-                          <div
-                            style={{
-                              marginTop: 24,
-                              background:
-                                "#F9FAFB",
-                              borderRadius: 18,
-                              padding: 16,
-                              display: "flex",
-                              justifyContent:
-                                "space-between",
-                            }}
-                          >
-                            <span>
-                              💰 Salary
-                            </span>
-
-                            <span>
-                              {job[
-                                "Salary"
-                              ] ||
-                                "Not Mentioned"}
-                            </span>
-                          </div>
-
-                          {/* STATUS */}
-
-                          <div
-                            style={{
-                              marginTop: 18,
-                              display: "flex",
-                              justifyContent:
-                                "space-between",
-                              alignItems:
-                                "center",
-                            }}
-                          >
-                            <span
-                              style={{
-                                fontWeight: 700,
-                                color:
-                                  getJobStatus(
-                                    job
-                                  ) ===
-                                  "Applied"
-                                    ? "#16A34A"
-                                    : getJobStatus(
-                                          job
-                                        ) ===
-                                      "Rejected"
-                                    ? "#DC2626"
-                                    : "#CA8A04",
-                              }}
-                            >
-                              ●{" "}
-                              {getJobStatus(
-                                job
-                              )}
-                            </span>
-
-                            <div
-                              style={{
-                                display:
-                                  "flex",
-                                gap: 10,
-                              }}
-                            >
-                              <button
-                                onClick={() =>
-                                  updateJobStatus(
-                                    job,
-                                    "Applied"
-                                  )
-                                }
-                                style={{
-                                  border:
-                                    "none",
-                                  background:
-                                    "#DCFCE7",
-                                  color:
-                                    "#166534",
-                                  padding:
-                                    "8px 12px",
-                                  borderRadius: 10,
-                                  cursor:
-                                    "pointer",
-                                }}
-                              >
-                                Applied
-                              </button>
-
-                              <button
-                                onClick={() =>
-                                  updateJobStatus(
-                                    job,
-                                    "Rejected"
-                                  )
-                                }
-                                style={{
-                                  border:
-                                    "none",
-                                  background:
-                                    "#FEE2E2",
-                                  color:
-                                    "#991B1B",
-                                  padding:
-                                    "8px 12px",
-                                  borderRadius: 10,
-                                  cursor:
-                                    "pointer",
-                                }}
-                              >
-                                Reject
-                              </button>
-                            </div>
-                          </div>
-
-                          {/* BUTTONS */}
-
-                          <div
-                            style={{
-                              display: "flex",
-                              gap: 14,
-                              marginTop: 24,
-                            }}
-                          >
-                            <a
-                              href={
+                          <div>
+                            <h2>
+                              {
                                 job[
-                                  "Apply Link"
+                                  "Job Title"
                                 ]
-                                  ? job[
-                                      "Apply Link"
-                                    ]?.startsWith(
-                                      "http"
-                                    )
-                                    ? job[
-                                        "Apply Link"
-                                      ]
-                                    : `https://${job["Apply Link"]}`
-                                  : "#"
                               }
-                              target="_blank"
-                              rel="noreferrer"
-                              style={{
-                                flex: 1,
-                                textAlign:
-                                  "center",
-                                background:
-                                  "linear-gradient(135deg,#2563EB,#4F46E5)",
-                                color:
-                                  "#ffffff",
-                                padding:
-                                  "15px",
-                                borderRadius: 16,
-                                textDecoration:
-                                  "none",
-                                fontWeight: 700,
-                                opacity:
-                                  job[
-                                    "Apply Link"
-                                  ]
-                                    ? 1
-                                    : 0.5,
-                                pointerEvents:
-                                  job[
-                                    "Apply Link"
-                                  ]
-                                    ? "auto"
-                                    : "none",
-                              }}
-                            >
-                              🔗 Apply Now
-                            </a>
+                            </h2>
 
+                            <p>
+                              🏢{" "}
+                              {
+                                job[
+                                  "Company"
+                                ]
+                              }
+                            </p>
+
+                            <p>
+                              📍{" "}
+                              {
+                                job[
+                                  "Location"
+                                ]
+                              }
+                            </p>
+                          </div>
+
+                          <div
+                            style={{
+                              ...badge,
+                              padding:
+                                "10px 14px",
+                              borderRadius: 14,
+                              fontWeight: 700,
+                            }}
+                          >
+                            {match}% Match
+                          </div>
+                        </div>
+
+                        <div
+                          style={{
+                            marginTop: 24,
+                            background:
+                              "#F9FAFB",
+                            borderRadius: 18,
+                            padding: 16,
+                            display: "flex",
+                            justifyContent:
+                              "space-between",
+                          }}
+                        >
+                          <span>
+                            💰 Salary
+                          </span>
+
+                          <span>
+                            {job[
+                              "Salary"
+                            ] ||
+                              "Not Mentioned"}
+                          </span>
+                        </div>
+
+                        <div
+                          style={{
+                            marginTop: 18,
+                            display:
+                              "flex",
+                            justifyContent:
+                              "space-between",
+                            alignItems:
+                              "center",
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontWeight: 700,
+                              color:
+                                getJobStatus(
+                                  job
+                                ) ===
+                                "Applied"
+                                  ? "#16A34A"
+                                  : getJobStatus(
+                                        job
+                                      ) ===
+                                    "Rejected"
+                                  ? "#DC2626"
+                                  : "#CA8A04",
+                            }}
+                          >
+                            ●{" "}
+                            {getJobStatus(
+                              job
+                            )}
+                          </span>
+
+                          <div
+                            style={{
+                              display:
+                                "flex",
+                              gap: 10,
+                            }}
+                          >
                             <button
                               onClick={() =>
-                                handleSaveJob(
-                                  job
+                                updateJobStatus(
+                                  job,
+                                  "Applied"
                                 )
                               }
                               style={{
-                                flex: 1,
-                                background:
-                                  "#16A34A",
-                                color:
-                                  "#ffffff",
                                 border:
                                   "none",
-                                borderRadius: 16,
-                                fontWeight: 700,
+                                background:
+                                  "#DCFCE7",
+                                color:
+                                  "#166534",
+                                padding:
+                                  "8px 12px",
+                                borderRadius: 10,
                                 cursor:
                                   "pointer",
                               }}
                             >
-                               Save
+                              Applied
+                            </button>
+
+                            <button
+                              onClick={() =>
+                                updateJobStatus(
+                                  job,
+                                  "Rejected"
+                                )
+                              }
+                              style={{
+                                border:
+                                  "none",
+                                background:
+                                  "#FEE2E2",
+                                color:
+                                  "#991B1B",
+                                padding:
+                                  "8px 12px",
+                                borderRadius: 10,
+                                cursor:
+                                  "pointer",
+                              }}
+                            >
+                              Reject
                             </button>
                           </div>
                         </div>
-                      );
-                    }
-                  )}
+
+                        <div
+                          style={{
+                            display:
+                              "flex",
+                            gap: 14,
+                            marginTop: 24,
+                          }}
+                        >
+                          <a
+                            href={
+                              job[
+                                "Apply Link"
+                              ]
+                                ? job[
+                                    "Apply Link"
+                                  ]?.startsWith(
+                                    "http"
+                                  )
+                                  ? job[
+                                      "Apply Link"
+                                    ]
+                                  : `https://${job["Apply Link"]}`
+                                : "#"
+                            }
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{
+                              flex: 1,
+                              textAlign:
+                                "center",
+                              background:
+                                "linear-gradient(135deg,#2563EB,#4F46E5)",
+                              color:
+                                "#ffffff",
+                              padding:
+                                "15px",
+                              borderRadius: 16,
+                              textDecoration:
+                                "none",
+                              fontWeight: 700,
+                              opacity:
+                                job[
+                                  "Apply Link"
+                                ]
+                                  ? 1
+                                  : 0.5,
+                              pointerEvents:
+                                job[
+                                  "Apply Link"
+                                ]
+                                  ? "auto"
+                                  : "none",
+                            }}
+                          >
+                            🔗 Apply Now
+                          </a>
+
+                          <button
+                            onClick={() =>
+                              handleSaveJob(
+                                job
+                              )
+                            }
+                            style={{
+                              flex: 1,
+                              background:
+                                "#16A34A",
+                              color:
+                                "#ffffff",
+                              border:
+                                "none",
+                              borderRadius: 16,
+                              fontWeight: 700,
+                              cursor:
+                                "pointer",
+                            }}
+                          >
+                             Save
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )
