@@ -1,0 +1,487 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://api.adzuna.com/v1/api/jobs/in/search/1",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "app_id",
+              "value": "2159d280"
+            },
+            {
+              "name": "app_key",
+              "value": "f11a820be62950cd30ccaf82f07f17fc"
+            },
+            {
+              "name": "what",
+              "value": "software developer"
+            },
+            {
+              "name": "where",
+              "value": "={{$json[\"locations\"]}}"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 2000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        400,
+        64
+      ],
+      "id": "92253717-015c-451e-b26e-927a96863d2d",
+      "name": "HTTP Request",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Wn5ad9G0JTLdpJ4CigAJEaD46iWBXXKp9M7iL9IDvKw",
+          "mode": "list",
+          "cachedResultName": "AI JOB TRACKER",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Wn5ad9G0JTLdpJ4CigAJEaD46iWBXXKp9M7iL9IDvKw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Wn5ad9G0JTLdpJ4CigAJEaD46iWBXXKp9M7iL9IDvKw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Job Title": "={{$json[\"title\"]}}",
+            "Company": "={{$json[\"company\"][\"display_name\"]}}",
+            "Salary": "={{$json[\"salary_min\"] || \"Not Mentioned\"}}",
+            "Location": "={{$json[\"location\"][\"display_name\"]}}",
+            "Apply Link": "={{$json[\"redirect_url\"]}}",
+            "Date": "={{new Date().toLocaleDateString()}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Job Title",
+              "displayName": "Job Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Salary",
+              "displayName": "Salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Apply Link",
+              "displayName": "Apply Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        592,
+        256
+      ],
+      "id": "9be31962-e7a8-4105-988c-59e2b7347523",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "p89PhhRQEusU49A6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1136,
+        848
+      ],
+      "id": "bf5b936d-21ee-4b9b-ae9e-e814f4098337",
+      "name": "Google Gemini Chat Model1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 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"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"openai/gpt-3.5-turbo\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Analyze this job description and give match percentage, missing skills, and short explanation.\\n\\nJob Description: {{$json.description}}\\n\\nCandidate Skills: Python, SQL, Machine Learning, ReactJS, Java\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        864,
+        16
+      ],
+      "id": "380829f8-11a7-4f03-b313-cca6085e3a12",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "locations",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        224,
+        224
+      ],
+      "id": "0aed4796-3ee3-49dc-82e7-1b25a4380df6",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "sendTo": "ambrishjeyan2@gmail.com",
+        "subject": "=👋 \n {{$json[\"title\"]}} at {{$json[\"company\"][\"display_name\"]}}\n\n",
+        "message": "=\n<div style=\"font-family: Arial, sans-serif; padding:20px; background:#f4f4f4;\">\n  \n  <div style=\"\n    background:white;\n    padding:25px;\n    border-radius:12px;\n    max-width:700px;\n    margin:auto;\n    box-shadow:0 4px 10px rgba(0,0,0,0.08);\n  \">\n\n    <h2 style=\"color:#2563eb;\">\n       New Job Opportunity Found\n    </h2>\n\n    <hr style=\"margin:20px 0; border:none; border-top:1px solid #e5e7eb;\">\n\n    <p style=\"font-size:16px;\">\n      <b>💼 Job Title:</b>\n      {{$json[\"title\"]}}\n    </p>\n\n    <p style=\"font-size:16px;\">\n      <b>🏢 Company:</b>\n      {{$json[\"company\"][\"display_name\"]}}\n    </p>\n\n    <p style=\"font-size:16px;\">\n      <b>📍 Location:</b>\n      {{$json[\"location\"][\"display_name\"]}}\n    </p>\n\n    <p style=\"font-size:16px;\">\n      <b>💰 Salary:</b>\n      {{$json[\"salary_min\"] || \"Not Mentioned\"}}\n    </p>\n\n    <hr style=\"margin:20px 0; border:none; border-top:1px solid #e5e7eb;\">\n\n    <h3 style=\"color:#16a34a; margin-bottom:15px;\">\n      🧠 AI Analysis\n    </h3>\n\n    <div style=\"\n      background:#f9fafb;\n      padding:15px;\n      border-radius:10px;\n      line-height:1.7;\n      color:#374151;\n    \">\n      {{$json[\"choices\"][0][\"message\"][\"content\"]}}\n    </div>\n\n    <div style=\"margin-top:30px; text-align:center;\">\n      <a \n        href=\"{{$json['redirect_url']}}\" \n        target=\"_blank\"\n        style=\"\n          background:#2563eb;\n          color:white;\n          padding:14px 28px;\n          text-decoration:none;\n          border-radius:8px;\n          font-weight:bold;\n          display:inline-block;\n          font-size:16px;\n        \"\n      >\n        🔗 Apply Now\n      </a>\n    </div>\n\n    <hr style=\"margin:30px 0; border:none; border-top:1px solid #e5e7eb;\">\n\n    <p style=\"color:gray; font-size:12px;\">\n      📅 {{new Date().toLocaleDateString()}}\n    </p>\n\n    <p style=\"color:gray; font-size:12px;\">\n      AI Job Tracker Automation 🤖\n    </p>\n\n  </div>\n\n</div>\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1072,
+        160
+      ],
+      "id": "ce338281-1d78-44a2-bedf-4a3ecfa88a48",
+      "name": "Send a message",
+      "webhookId": "517771dc-16ad-421c-a724-70b2b2e028f9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "z75Ewz7YCsIkNkuS",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "82b23a7c-59df-4b25-9c4a-b6155113839f",
+              "leftValue": "={{$json[\"row_number\"]}}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        864,
+        736
+      ],
+      "id": "9f7f4fa3-00f2-4578-a6f3-08f87971eb13",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Wn5ad9G0JTLdpJ4CigAJEaD46iWBXXKp9M7iL9IDvKw",
+          "mode": "list",
+          "cachedResultName": "AI JOB TRACKER",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Wn5ad9G0JTLdpJ4CigAJEaD46iWBXXKp9M7iL9IDvKw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Wn5ad9G0JTLdpJ4CigAJEaD46iWBXXKp9M7iL9IDvKw/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Job Title",
+              "lookupValue": "={{$json[\"title\"]}}"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        656,
+        656
+      ],
+      "id": "886907b5-e823-42cb-85d5-ce5275e9ef29",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "p89PhhRQEusU49A6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8b52e4db-b64e-4c0c-a072-1a910c6ae627",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"locations\": [\n    {\n      \"location\": \"chennai\"\n    },\n    {\n      \"location\": \"bangalore\"\n    },\n    {\n      \"location\": \"hyderabad\"\n    },\n    {\n      \"location\": \"pune\"\n    },\n    {\n      \"location\": \"remote\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        144,
+        16
+      ],
+      "id": "14e9942a-36f4-43ef-8d2e-20d68cffa1f8",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "results",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        592,
+        80
+      ],
+      "id": "1ea19abc-e7dc-44d6-99ec-fcd0f57f8c37",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        896,
+        368
+      ],
+      "id": "f41502f6-6f60-4c89-8039-872ea9ea83a1",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "2b72a0e8-82f4-40ca-bfc2-7c263b5679be",
+  "meta": {
+    "instanceId": "ec5e09c5b83c70da70b005ab6a169222ef83fb8baea75555bae14c5d3ffaa788"
+  },
+  "id": "jyBidOaayOKTrQ5m",
+  "tags": []
+}
